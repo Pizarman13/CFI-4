@@ -2,33 +2,38 @@ package org.App;
 
 import org.App.EditorTextoInteractivo.*;
 import javax.swing.*;
+import java.awt.*;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
-    public class MainFrame extends JFrame {
-        public MainFrame() {
-            setTitle("Editor de texto y lista de documentos");
-            setSize(800, 400);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-            CreacionAlmacenamiento almacenamiento = new CreacionAlmacenamiento();
-            NavegacionListado navegacion = new NavegacionListado();
-
-            JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, almacenamiento, navegacion);
-            splitPane.setResizeWeight(0.5);
-            add(splitPane, "Center");
-        }
-    }
-
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() -> {
-            MainFrame mainFrame = new Main().new MainFrame();
-            mainFrame.setVisible(true);
+
+            // Crear una instancia de CreacionAlmacenamiento
+            CreacionAlmacenamiento creacionAlmacenamiento = new CreacionAlmacenamiento();
+
+            // Crear una instancia de NavegacionListado
+            NavegacionListado navegacionListado = new NavegacionListado();
+
+            // Crear un JFrame para contener ambas clases
+            JFrame frame = new JFrame("Editor de Texto Interactivo");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            // Agregar CreacionAlmacenamiento y NavegacionListado al JFrame
+            frame.getContentPane().add(creacionAlmacenamiento, BorderLayout.WEST);
+            frame.getContentPane().add(navegacionListado, BorderLayout.EAST);
+
+            // Configurar el JFrame y mostrarlo
+            frame.pack();
+            frame.setSize(800, 400); // Tamaño arbitrario
+            frame.setLocationRelativeTo(null); // Centrar en la pantalla
+            frame.setVisible(true);
+            frame.add(creacionAlmacenamiento, BorderLayout.CENTER);
         });
+    }
 
     }
 
-}

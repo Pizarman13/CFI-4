@@ -1,68 +1,96 @@
 package org.App.EditorTextoInteractivo;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.nio.file.Files;
 
 public class CreacionAlmacenamiento extends JPanel {
 
     private JTextArea textArea;
-    private JFileChooser fileChooser;
 
     public CreacionAlmacenamiento() {
-
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
         textArea = new JTextArea();
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        add(scrollPane, "Center");
+        JButton openButton = new JButton("Abrir");
+        JButton saveButton = new JButton("Guardar");
+        JButton newButton = new JButton("Nuevo");
 
-        JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("Archivo");
-        JMenuItem newItem = new JMenuItem("Nuevo");
-        JMenuItem openItem = new JMenuItem("Abrir");
-        JMenuItem saveItem = new JMenuItem("Guardar");
-        JMenuItem saveAsItem = new JMenuItem("Guardar como");
-        JMenuItem exitItem = new JMenuItem("Salir");
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.add(saveButton);
+        buttonPanel.add(openButton);
+        buttonPanel.add(newButton);
 
-        fileMenu.add(newItem);
-        fileMenu.add(openItem);
-        fileMenu.add(saveItem);
-        fileMenu.add(saveAsItem);
-        fileMenu.add(exitItem);
-        menuBar.add(fileMenu);
-        add(menuBar, "First");
+        setLayout(new BorderLayout());
+        add(new JScrollPane(textArea), BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.EAST);
 
-        fileChooser = new JFileChooser();
-
-        newItem.addActionListener(e -> {
-            textArea.setText("");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Guardar archivo");
+                int userSelection = fileChooser.showSaveDialog(CreacionAlmacenamiento.this);
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    if (file != null) {
+                        try {
+                            FileWriter fileWriter = new FileWriter(file);
+                            fileWriter.write(textArea.getText());
+                            fileWriter.close();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
         });
 
-        openItem.addActionListener(e -> {
-            int result = fileChooser.showOpenDialog(this);
-            if (result == JFileChooser.APPROVE_OPTION) {
+        openButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Abrir archivo");
+                int userSelection = fileChooser.showOpenDialog(CreacionAlmacenamiento.this);
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    if (file != null) {
+                        try {
+                            textArea.setText("");
+                            textArea.append(new String(Files.readAllBytes(file.toPath())));
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+
+
+
+        newButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int option = JOptionPane.showConfirmDialog(CreacionAlmacenamiento.this, "Do you want to save the current file?");
+                if (option == JOptionPane.YES_OPTION) {
+                    saveButton.doClick();
+                }
                 textArea.setText("");
-                textArea.append("Abrir archivo: " + fileChooser.getSelectedFile().getAbsolutePath() + "\n");
             }
-        });
-
-        saveItem.addActionListener(e -> {
-            int result = fileChooser.showSaveDialog(this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                textArea.append("Guardar archivo: " + fileChooser.getSelectedFile().getAbsolutePath() + "\n");
-            }
-        });
-
-        saveAsItem.addActionListener(e -> {
-            int result = fileChooser.showSaveDialog(this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                textArea.append("Guardar como archivo: " + fileChooser.getSelectedFile().getAbsolutePath() + "\n");
-            }
-        });
-
-        exitItem.addActionListener(e -> {
-            System.exit(0);
         });
 
     }
 
+    public void abrirArchivos(File file) {
+        try {
+            textArea.setText("");
+            textArea.append(new String(Files.readAllBytes(file.toPath())));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
