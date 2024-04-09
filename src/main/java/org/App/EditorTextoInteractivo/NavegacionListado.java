@@ -79,6 +79,6 @@ public class NavegacionListado extends JPanel {
         textArea.setText("");
         textArea.append("Eliminar archivo: " + nombreArchivo + "\n");
     }
-    
+
 
 }
